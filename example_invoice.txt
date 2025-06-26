@@ -1,0 +1,43 @@
+Invoice Number: INV-2024-007
+Issue Date: 2024-03-15
+Due Date: 2024-04-14
+
+Billed From:
+Awesome Solutions LLC
+123 Innovation Drive
+Tech City, TC 54321
+USA
+VAT ID: US987654321
+Email: contact@awesomesolutions.dev
+
+Billed To:
+John Doe
+Client Services Inc.
+456 Business Park Avenue
+Metroville, MV 67890
+USA
+Client ID: CUST001
+
+Items:
+------------------------------------------------------------------
+| Description             | Quantity | Unit Price | Total Price  |
+|-------------------------|----------|------------|--------------|
+| Web Development Hours   | 20       | 75.00      | 1500.00      |
+| Cloud Hosting (Annual)  | 1        | 300.00     | 300.00       |
+| SSL Certificate         | 1        | 50.00      | 50.00        |
+------------------------------------------------------------------
+
+Subtotal: 1850.00
+Tax (10%): 185.00
+TOTAL DUE: 2035.00
+
+Currency: USD
+Payment Terms: Net 30 Days
+Bank Details:
+Bank Name: Tech Savvy Bank
+Account: 123-456-7890
+SWIFT: TSBKUS33
+
+Thank you for your business!
+For any queries, please contact billing@awesomesolutions.dev
+```
