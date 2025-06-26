@@ -9,7 +9,7 @@ The agent receives invoice content (currently expected as text, with OCR for ima
 The core functionalities are:
 -   Parsing invoice data for fields like vendor/customer details, IDs (VAT, Tax, ICO, DIC), dates, line items, and totals.
 -   Utilizing an external LLM for the extraction logic.
--   Validating the output against a predefined JSON schema (`invoice_schema.json`).
+-   Validating the output against a predefined JSON schema (`src/invoice_parser_agent/schema.json`).
 
 ## Setup Instructions
 
@@ -40,14 +40,14 @@ This agent uses a placeholder for LLM interaction. To connect to a real LLM, you
     *   **Google Gemini:** Via Vertex AI. Requires `google-cloud-aiplatform` and authentication (e.g., service account key).
     *   **OpenAI Models (GPT-3.5/4):** Requires the `openai` library and an API key.
     *   **Hugging Face Models:** Can be accessed via the Inference API (`requests`) or by running models locally/on a dedicated instance (`transformers`).
-*   **Update `invoice_parser_agent.py`:**
-    *   Modify the `call_llm_expert` function to include the API calls to your chosen LLM.
+*   **Update `src/invoice_parser_agent/agent_logic.py`:**
+    *   Modify the `call_llm_expert` function in `src/invoice_parser_agent/agent_logic.py` to include the API calls to your chosen LLM.
     *   You might pass LLM configuration (API keys, model names, endpoints) via environment variables, a configuration file, or through the `llm_config` dictionary passed to `extract_invoice_data`.
 *   **Install LLM SDK:** Add the necessary Python library for your chosen LLM to `requirements.txt` and install it.
 
 **Example (Conceptual for Gemini):**
 
-In `invoice_parser_agent.py`, `call_llm_expert` might look like:
+In `src/invoice_parser_agent/agent_logic.py`, `call_llm_expert` might look like:
 
 ```python
 # from google.cloud import aiplatform
@@ -81,45 +81,56 @@ If you plan to process invoice images, you'll need an OCR engine. The current co
     ```bash
     pip install Pillow pytesseract
     ```
-*   **Update `invoice_parser_agent.py`:** Uncomment and adapt the OCR section in `extract_invoice_data`.
+*   **Update `src/invoice_parser_agent/agent_logic.py`:** Uncomment and adapt the OCR section in `extract_invoice_data` within `src/invoice_parser_agent/agent_logic.py`.
+
+## Project Structure
+
+The project is structured as follows:
+
+```
+.
+├── src/
+│   └── invoice_parser_agent/
+│       ├── __init__.py                 # Makes it a Python package
+│       ├── agent_logic.py              # Core data extraction logic, LLM calls
+│       ├── mcp_agent.py                # MCP SDK integration (Agent class)
+│       └── schema.json                 # JSON schema for invoice data
+├── examples/
+│   ├── example_invoice.txt           # Sample invoice text
+│   └── expected_output.json          # Expected JSON output for the sample (from dummy LLM)
+├── tests/                            # Optional: For future unit tests
+│   └── ...
+├── main.py                           # Entry point to run the MCP agent server
+├── README.md                         # This file
+└── requirements.txt                  # Python dependencies
+```
 
 ## Running the Agent
 
-The agent's core logic is in `invoice_parser_agent.py`. To run it as an MCP agent, you'll need to use the `modelcontextprotocol/python-sdk`.
+The agent is designed to be run using the `modelcontextprotocol/python-sdk`. The MCP integration is handled in `src/invoice_parser_agent/mcp_agent.py`, and the core parsing logic is in `src/invoice_parser_agent/agent_logic.py`.
 
-A conceptual integration is provided in the comments of `invoice_parser_agent.py`. You would typically:
-1.  Complete the `InvoiceParsingAgent` class by inheriting from the SDK's base `Agent` class.
-2.  Implement the `process_request` method as outlined.
-3.  Use the SDK's utilities to start the agent server.
+A top-level `main.py` is provided as the primary entry point to start the agent server.
 
-**Example (Conceptual, assuming SDK provides `run_agent`):**
+1.  **Ensure SDK is Set Up:**
+    *   The `src/invoice_parser_agent/mcp_agent.py` file contains placeholder classes for the MCP SDK (`Agent`, `AgentContext`, etc.). You will need to replace these with the actual imports from the `modelcontextprotocol` SDK once it's installed and available in your environment.
+    *   The `main.py` script will also need to use the correct functions from the SDK to run the agent.
 
-```python
-# In invoice_parser_agent.py (or a new main.py)
-if __name__ == "__main__":
-    from modelcontextprotocol.agent import Agent # Or specific imports
-    # from modelcontextprotocol.server import run_agent # Hypothetical SDK function
+2.  **Run the Agent Server:**
+    Once the SDK is correctly integrated, you would typically run:
+    ```bash
+    python main.py
+    ```
+    This script should initialize and start the `InvoiceParsingAgent` server (e.g., on `http://localhost:8080`).
 
-    # Assuming InvoiceParsingAgent class is defined as in the conceptual comments
+### Testing Core Logic Directly
 
-    # You'll need to get the actual SDK classes and functions
-    # For example:
-    # from modelcontextprotocol.runner import run
-    # from your_agent_module import InvoiceParsingAgent
-
-    # agent_instance = InvoiceParsingAgent(agent_id="invoice-parser", version="0.1.0")
-    # print("Starting Invoice Parser Agent...")
-    # run(agent_instance, host="0.0.0.0", port=8080) # Replace with actual SDK run command
-
-    # For now, you can test the core logic directly:
-    print("Running invoice_parser_agent.py in direct test mode (not as MCP agent):")
-    # This will execute the __main__ block within invoice_parser_agent.py
-    import subprocess
-    subprocess.run(["python", "invoice_parser_agent.py"])
-
+You can test the core data extraction logic (using the placeholder LLM) by running the `agent_logic.py` script directly:
+```bash
+python src/invoice_parser_agent/agent_logic.py
 ```
+This will execute its `if __name__ == "__main__":` block, which processes sample text and validates against the schema.
 
-Once the agent server is running (e.g., on `http://localhost:8080`), it's ready to be added as an MCP resource.
+Once the agent server is running via `main.py` (e.g., on `http://localhost:8080`), it's ready to be added as an MCP resource.
 
 ## VS Code MCP Integration
 
@@ -220,7 +231,7 @@ The agent's `process_request` method (when integrated with MCP SDK) expects a JS
 
 ### Output
 
-The agent returns a JSON object conforming to `invoice_schema.json`.
+The agent returns a JSON object conforming to `src/invoice_parser_agent/schema.json`.
 
 **Example Successful Response Body:**
 
@@ -246,9 +257,10 @@ The agent returns a JSON object conforming to `invoice_schema.json`.
 ## Development Notes
 
 *   **LLM Choice:** The placeholder `call_llm_expert` needs to be replaced with actual calls to your chosen LLM. Consider models with strong JSON output capabilities and good instruction following. Gemini models with `response_mime_type: "application/json"` are excellent for this.
-*   **OCR:** For image-based invoices, robust OCR (e.g., Tesseract, Google Cloud Vision API, Azure Computer Vision) is crucial for good quality text extraction before sending to the LLM.
-*   **Error Handling:** Enhance error handling for LLM API calls, OCR failures, and validation issues.
-*   **Schema Evolution:** The `invoice_schema.json` can be extended as needed to capture more fields or support different invoice structures.
+*   **OCR:** For image-based invoices, robust OCR (e.g., Tesseract, Google Cloud Vision API, Azure Computer Vision) is crucial for good quality text extraction before sending to the LLM. This would be implemented in `src/invoice_parser_agent/agent_logic.py`.
+*   **Error Handling:** Enhance error handling for LLM API calls, OCR failures, and validation issues in `src/invoice_parser_agent/agent_logic.py` and `src/invoice_parser_agent/mcp_agent.py`.
+*   **Schema Evolution:** The `src/invoice_parser_agent/schema.json` can be extended as needed to capture more fields or support different invoice structures. Remember to update the system prompt in `agent_logic.py` if the schema changes significantly.
 *   **Security:** Be mindful of API key management. Use environment variables or secure secret management solutions; do not hardcode keys in the source code.
-*   **Testing `invoice_parser_agent.py`:** The `if __name__ == "__main__":` block in `invoice_parser_agent.py` allows you to test the core extraction logic directly by running `python invoice_parser_agent.py`. The dummy LLM response will be used.
+*   **Testing Core Logic:** The `if __name__ == "__main__":` block in `src/invoice_parser_agent/agent_logic.py` allows you to test the core extraction logic directly by running `python src/invoice_parser_agent/agent_logic.py`. The dummy LLM response will be used.
+*   **MCP SDK Integration:** The `src/invoice_parser_agent/mcp_agent.py` and `main.py` files will need to be updated with actual imports and functions from the `modelcontextprotocol/python-sdk` when it's available.
 ```

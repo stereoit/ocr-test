@@ -3,7 +3,10 @@ import os
 from jsonschema import validate, ValidationError
 
 # --- Configuration ---
-SCHEMA_FILE_PATH = 'invoice_schema.json' # Path to the JSON schema file
+# Determine the absolute path to the schema file relative to this script file.
+# This ensures it works correctly regardless of where the script is called from.
+_CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCHEMA_FILE_PATH = os.path.join(_CURRENT_DIR, 'schema.json')
 
 # --- Load JSON Schema ---
 def load_schema(schema_path):
@@ -261,41 +264,3 @@ if __name__ == "__main__":
         print(f"Unexpected error during missing field test: {e}")
 
     print("\n--- End of Test Mode ---")
-
-"""
-MCP Integration (Conceptual - to be implemented in a wrapper or main agent file)
-
-from modelcontextprotocol.agent import Agent, AgentContext, AgentRequest, AgentResponse
-
-class InvoiceParsingAgent(Agent):
-    async def process_request(self, context: AgentContext, request: AgentRequest) -> AgentResponse:
-        if request.resource_name != "invoice_parser":
-            return AgentResponse.error(f"Unknown resource: {request.resource_name}")
-
-        invoice_content = request.body.get("invoice_content") # Expecting text or image path
-        llm_config = request.body.get("llm_config") # Optional LLM config
-
-        if not invoice_content:
-            return AgentResponse.error("Missing 'invoice_content' in request body.")
-
-        try:
-            # In a real agent, you might handle file uploads for images,
-            # perform OCR if needed, then pass text to extract_invoice_data.
-            # For now, assuming invoice_content is text.
-
-            extracted_data = extract_invoice_data(invoice_content, llm_config)
-
-            if extracted_data:
-                return AgentResponse.success(body=extracted_data)
-            else:
-                return AgentResponse.error("Failed to extract invoice data after processing.")
-        except Exception as e:
-            print(f"Error processing request in InvoiceParsingAgent: {e}")
-            return AgentResponse.error(f"Internal server error: {str(e)}")
-
-# To run this agent (example, depends on SDK specifics):
-# if __name__ == "__main__":
-#   agent = InvoiceParsingAgent(agent_id="invoice-parser-agent", version="0.1.0")
-#   # ... SDK-specific server setup and run command ...
-#   # e.g., agent.serve(host="0.0.0.0", port=8080)
-"""
