@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Invoice",
+  "description": "Schema for representing extracted invoice data.",
+  "type": "object",
+  "properties": {
+    "invoice_id": {
+      "description": "Unique identifier for the invoice.",
+      "type": ["string", "null"]
+    },
+    "issue_date": {
+      "description": "Date when the invoice was issued (YYYY-MM-DD).",
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "due_date": {
+      "description": "Date when the payment is due (YYYY-MM-DD).",
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "vendor_name": {
+      "description": "Name of the company issuing the invoice.",
+      "type": ["string", "null"]
+    },
+    "vendor_address": {
+      "description": "Full address of the vendor.",
+      "type": ["string", "null"]
+    },
+    "vendor_vat_id": {
+      "description": "VAT identification number of the vendor.",
+      "type": ["string", "null"]
+    },
+    "vendor_tax_id": {
+      "description": "Tax identification number of the vendor (e.g., EIN in the US).",
+      "type": ["string", "null"]
+    },
+    "vendor_ico": {
+      "description": "ICO (IČO) - Business Registration Number, common in Czechia/Slovakia.",
+      "type": ["string", "null"]
+    },
+    "vendor_dic": {
+      "description": "DIČ - Tax Registration Number, common in Czechia/Slovakia.",
+      "type": ["string", "null"]
+    },
+    "vendor_bank_account": {
+      "description": "Vendor's bank account number (IBAN if available).",
+      "type": ["string", "null"]
+    },
+    "vendor_swift_bic": {
+      "description": "Vendor's bank SWIFT/BIC code.",
+      "type": ["string", "null"]
+    },
+    "customer_name": {
+      "description": "Name of the customer.",
+      "type": ["string", "null"]
+    },
+    "customer_address": {
+      "description": "Full address of the customer.",
+      "type": ["string", "null"]
+    },
+    "customer_vat_id": {
+      "description": "VAT identification number of the customer.",
+      "type": ["string", "null"]
+    },
+    "customer_tax_id": {
+      "description": "Tax identification number of the customer.",
+      "type": ["string", "null"]
+    },
+    "customer_ico": {
+      "description": "ICO (IČO) - Business Registration Number of the customer.",
+      "type": ["string", "null"]
+    },
+    "customer_dic": {
+      "description": "DIČ - Tax Registration Number of the customer.",
+      "type": ["string", "null"]
+    },
+    "line_items": {
+      "description": "List of items or services on the invoice.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": ["number", "null"]
+          },
+          "unit_price": {
+            "type": ["number", "null"]
+          },
+          "total_price": {
+            "type": ["number", "null"]
+          },
+          "vat_rate": {
+            "description": "VAT rate applicable to this line item (e.g., 0.21 for 21%).",
+            "type": ["number", "null"]
+          },
+          "vat_amount": {
+            "description": "VAT amount for this line item.",
+            "type": ["number", "null"]
+          }
+        },
+        "required": [
+          "description"
+        ]
+      }
+    },
+    "subtotal": {
+      "description": "Total amount before taxes.",
+      "type": ["number", "null"]
+    },
+    "total_tax_amount": {
+      "description": "Total amount of all taxes.",
+      "type": ["number", "null"]
+    },
+    "total_amount": {
+      "description": "The final amount due.",
+      "type": ["number", "null"]
+    },
+    "currency": {
+      "description": "Currency of the amounts (e.g., USD, EUR, CZK).",
+      "type": ["string", "null"]
+    },
+    "payment_terms": {
+      "description": "Payment terms (e.g., 'Net 30 days').",
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "description": "Any additional notes or comments on the invoice.",
+      "type": ["string", "null"]
+    },
+    "raw_text": {
+        "description": "Full raw text extracted from the invoice if OCR was performed.",
+        "type": ["string", "null"]
+    }
+  },
+  "required": [
+    "vendor_name",
+    "total_amount"
+  ]
+}

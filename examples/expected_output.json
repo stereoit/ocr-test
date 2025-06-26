@@ -1,0 +1,44 @@
+{
+  "invoice_id": "INV-2023-001",
+  "issue_date": "2023-10-26",
+  "due_date": "2023-11-25",
+  "vendor_name": "Example Corp",
+  "vendor_address": "123 Main St, Anytown, USA",
+  "vendor_vat_id": "US123456789",
+  "vendor_tax_id": null,
+  "vendor_ico": null,
+  "vendor_dic": null,
+  "vendor_bank_account": "1234567890",
+  "vendor_swift_bic": "EXMPUS33",
+  "customer_name": "Test Customer Ltd.",
+  "customer_address": "456 Oak Ave, Otherville, USA",
+  "customer_vat_id": null,
+  "customer_tax_id": null,
+  "customer_ico": null,
+  "customer_dic": null,
+  "line_items": [
+    {
+      "description": "Product A",
+      "quantity": 2,
+      "unit_price": 50.00,
+      "total_price": 100.00,
+      "vat_rate": 0.10,
+      "vat_amount": 10.00
+    },
+    {
+      "description": "Service B",
+      "quantity": 1,
+      "unit_price": 75.00,
+      "total_price": 75.00,
+      "vat_rate": 0.10,
+      "vat_amount": 7.50
+    }
+  ],
+  "subtotal": 175.00,
+  "total_tax_amount": 17.50,
+  "total_amount": 192.50,
+  "currency": "USD",
+  "payment_terms": "Net 30 days",
+  "notes": "Thank you for your business!",
+  "raw_text": "Content of image file: example_invoice.txt (OCR not performed)"
+}
